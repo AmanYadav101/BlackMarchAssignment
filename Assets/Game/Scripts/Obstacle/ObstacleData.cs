@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,8 +7,16 @@ namespace Game.Scripts.Obstacle
      [CreateAssetMenu(fileName = "New Obstacle Data", menuName = "Obstacle System/Obstacle Data")]
      public class ObstacleData : ScriptableObject
      {
-         public List<bool> obstacleGrid = new List<bool>(100); 
-         
+         public List<bool> obstacleGrid = new List<bool>(100);
+
+         private void OnValidate()
+         {
+             if (obstacleGrid == null || obstacleGrid.Count != 100)
+             {
+                 obstacleGrid = new List<bool>(new bool[100]);
+             }
+         }
+
          public bool GetObstacleAt(int x, int y)
          {
              return obstacleGrid[y * 10 + x]; 

@@ -6,5 +6,7 @@ namespace Game.Scripts
     {
         public Vector2Int gridPosition;  // The tile's position in the grid
         public bool isObstacle;
+        public bool isEnemy;
+        
     }
 }
