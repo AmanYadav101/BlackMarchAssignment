@@ -36,7 +36,7 @@ namespace Game.Scripts.Enemy
                             Debug.LogError("Obstacle already exists");
                             return;
                         }
-                        Vector3 position = new Vector3((x) * tileSize, tileSize * 1.5f, (y) * tileSize);
+                        Vector3 position = new Vector3((x) * tileSize, tileSize, (y) * tileSize);
 
                         _enemies[x, y] = Instantiate(enemyPrefab, position, Quaternion.identity, transform);
                         numberOfEnemies++;
