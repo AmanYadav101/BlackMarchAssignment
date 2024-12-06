@@ -8,29 +8,29 @@ namespace Game.Scripts.Managers
 {
     public class GridManager : MonoBehaviour
     {
-        public GameObject tilePrefab; 
-        public int gridSizeX = 10; 
+        public GameObject tilePrefab;
+        public int gridSizeX = 10;
         public int gridSizeZ = 10;
-        public float tileSize = 1.0f; 
-        public Camera mainCamera; 
+        public float tileSize = 1.0f;
+        public Camera mainCamera;
         public TextMeshProUGUI tileInfoText;
         public ObstacleData obstacleData;
-        
+
         public GameObject[,] gridArray;
         public int startX = 0;
         public int startZ = 0;
         public int endX = 2;
         public int endZ = 2;
-        
-        private Tile _lastHoveredTile; 
 
+        private Tile _lastHoveredTile;
+
+        private Color color;
 
         void Start()
         {
-            gridArray = new GameObject[gridSizeX, gridSizeZ]; 
-            if(tileInfoText != null)
+            gridArray = new GameObject[gridSizeX, gridSizeZ];
+            if (tileInfoText != null)
                 GenerateGrid();
-           
         }
 
         void Update()
@@ -48,10 +48,16 @@ namespace Game.Scripts.Managers
                         _lastHoveredTile = tile;
                     }
 
-                    tile.GetComponent<MeshRenderer>().materials[0].color = tile.isObstacle ? Color.red : Color.gray;
+                    tile.GetComponent<MeshRenderer>().materials[0].color = tile.isObstacle ? Color.red : Color.blue;
 
-                    tileInfoText.text = $"Tile Position: {tile.gridPosition}";
-                    
+                    if (tile.isObstacle)
+                    {
+                        tileInfoText.text = $"Obstacle Tile:\n {tile.gridPosition}";
+                    }
+                    else
+                    {
+                        tileInfoText.text = $"Tile Position:\n {tile.gridPosition}";
+                    }
                 }
             }
             else
@@ -62,21 +68,20 @@ namespace Game.Scripts.Managers
 
         void GenerateGrid()
         {
-
-            for (int x = 0; x <gridSizeX ; x++)
+            for (int x = 0; x < gridSizeX; x++)
             {
                 for (int z = 0; z < gridSizeX; z++)
                 {
-                    
                     Vector3 position = new Vector3(x * tileSize, 0, z * tileSize);
-                    GameObject tile = Instantiate(tilePrefab, position, Quaternion.identity, transform);
-                    tile.GetComponent<MeshRenderer>().materials[0].color = Color.white;
+                    Quaternion rotation = Quaternion.Euler(-90, 0, 0);
+                    GameObject tile = Instantiate(tilePrefab, position, rotation, transform);
+                    tile.GetComponent<MeshRenderer>().materials[0].color = Color.gray;
                     tile.name = $"Tile_{x}_{z}";
 
                     Tile tileScript = tile.AddComponent<Tile>();
                     tileScript.gridPosition = new Vector2Int(x, z);
 
-                    if (obstacleData.GetObstacleAt(x , z ))
+                    if (obstacleData.GetObstacleAt(x, z))
                     {
                         tileScript.isObstacle = true;
                         // tile.GetComponent<MeshRenderer>().materials[0].color = Color.red; 
@@ -94,9 +99,8 @@ namespace Game.Scripts.Managers
         {
             if (_lastHoveredTile != null)
             {
-                _lastHoveredTile.GetComponent<MeshRenderer>().materials[0].color = Color.white;
+                _lastHoveredTile.GetComponent<MeshRenderer>().materials[0].color = Color.gray;
             }
         }
     }
 }
-

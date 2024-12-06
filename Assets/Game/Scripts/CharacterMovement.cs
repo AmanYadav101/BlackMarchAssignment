@@ -17,18 +17,22 @@ namespace Game.Scripts
         public bool isMoving = false;
         public ObstacleData obstacleData;
         public EnemyObstacleData enemyObstacleData;
+        public Animator animator;
 
         // public GameObject characterUnit; // The player unit (Cube or prefab)
         public float moveSpeed = 2f; // Movement speed of the player
         protected Queue<Vector3> movementQueue = new Queue<Vector3>();
         protected static Turn turnToMove = Turn.Player;
-        protected  Vector2 finalTarget = Vector2.negativeInfinity;
-        protected  Vector2Int originalPosition = new Vector2Int { x = -1, y = -1 };
+        protected Vector2 finalTarget = Vector2.negativeInfinity;
+        protected Vector2Int originalPosition = new Vector2Int { x = -1, y = -1 };
 
 
         protected IEnumerator MoveToTarget(Vector3 targetPosition, Turn changeTurnToMoveTo)
         {
             isMoving = true;
+            
+            animator.SetBool("IsMoving", isMoving);
+            
             if (gameObject.transform.position.x < targetPosition.x)
             {
                 gameObject.transform.transform.rotation = Quaternion.Euler(0, 90, 0);
@@ -52,14 +56,16 @@ namespace Game.Scripts
                     moveSpeed * Time.deltaTime);
                 yield return null;
             }
+            isMoving = false; // Movement complete
+            animator.SetBool("IsMoving", isMoving);
 
             gameObject.transform.position = targetPosition; // Snap to target position
-            isMoving = false; // Movement complete
             if (finalTarget != Vector2.negativeInfinity && Mathf.Approximately(finalTarget.x, targetPosition.x) &&
                 Mathf.Approximately(finalTarget.y, targetPosition.z))
             {
                 turnToMove = changeTurnToMoveTo;
             }
+
         }
 
         protected void BfsToTile(Tile targetTile)
@@ -80,7 +86,7 @@ namespace Game.Scripts
 
             queue.Enqueue(originalPosition);
             visited.Add(originalPosition);
-            
+
 
             while (queue.Count > 0)
             {
@@ -146,12 +152,12 @@ namespace Game.Scripts
 
         private bool IsObstacle(Vector2Int position)
         {
-            return obstacleData.GetObstacleAt(position.x, position.y) ;
+            return obstacleData.GetObstacleAt(position.x, position.y);
         }
-        
+
         private bool IsEnemy(Vector2Int position)
         {
-            return enemyObstacleData.GetEnemiesAt(position.x, position.y) ;
+            return enemyObstacleData.GetEnemiesAt(position.x, position.y);
         }
 
         private bool IsValidPosition(Vector2Int position)
@@ -166,7 +172,7 @@ namespace Game.Scripts
             {
                 return hit.collider.GetComponent<Tile>();
             }
-        
+
             return null;
         }
     }

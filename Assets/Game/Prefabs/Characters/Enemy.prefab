@@ -136,6 +136,7 @@ MonoBehaviour:
   isMoving: 0
   obstacleData: {fileID: 11400000, guid: 6a839f833d301884e855b5d175c6219e, type: 2}
   enemyObstacleData: {fileID: 11400000, guid: 5b705982b269e6043a39f92eb7c14cac, type: 2}
+  animator: {fileID: 2421571567882027926}
   moveSpeed: 2
 --- !u!1 &581865577192494259
 GameObject:
@@ -2411,6 +2412,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: KyleRobot
       objectReference: {fileID: 0}
+    - target: {fileID: 7163341763079882450, guid: 73ffbc06802a247cfb1b26f4ee67eba8,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e0bc59519c3b8af468ab562a46e15627, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

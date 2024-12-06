@@ -1,13 +1,9 @@
-using System;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.VisualScripting;
+
 
 namespace Game.Scripts.Enemy
 {
-    public class EnemyAI : CharacterMovement, IAI
+    public class EnemyAI : CharacterMovement
     {
         private Transform player; // Assign the player's Transform in the Inspector
 
@@ -32,22 +28,7 @@ namespace Game.Scripts.Enemy
 
         private void Update()
         {
-            // if (player == null)
-            // {
-            //     Debug.LogWarning("Player Transform not assigned!");
-            //     return;
-            // }
-
-            // Track how long the player has been stationary
-            // if (!playerMovement.isMoving)
-            // {
-            //     playerNotMovingTimer += Time.deltaTime;
-            // }
-            // else
-            // {
-            //     playerNotMovingTimer = 0f;
-            // }
-            // Debug.Log("turn to move is : " + turnToMove);
+           
             if (turnToMove == Turn.Player)
             {
                 return;
@@ -55,8 +36,7 @@ namespace Game.Scripts.Enemy
 
             _playerGridPosition = GetGridPosition(player.position);
 
-            Debug.Log("PlayerPos: " + _playerGridPosition);
-            // If the enemy is adjacent to the player, don't move
+            // Debug.Log("PlayerPos: " + _playerGridPosition);
 
 
             Tile tile = GetTileAtPosition(_playerGridPosition);
