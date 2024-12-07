@@ -121,6 +121,8 @@ namespace Game.Scripts
                     cameFrom[neighbor] = current;
                 }
             }
+            
+            // when path is not found.
         }
 
         /// <summary>

@@ -11,18 +11,16 @@ namespace Game.Scripts.Enemy
     public class EnemyManager : MonoBehaviour
     {
         public ObstacleData obstacleData;
-        public EnemyObstacleData enemyObstacleData; 
-        public GameObject enemyPrefab; 
-        public float tileSize = 1.0f; 
+        public EnemyObstacleData enemyObstacleData;
+        public GameObject enemyPrefab;
+        public float tileSize = 1.0f;
 
-        private GameObject[,] _enemies = new GameObject[10, 10]; 
+        private GameObject[,] _enemies = new GameObject[10, 10];
 
-        private int _maxNumberOfEnemies = 1;
-        
         // Used to keep record of number of enemies that has been spawned and that the enemies to spawn doesn't exist _maxNumberOfEnemies.
-        int numberOfEnemies = 0; 
+        private const int MaxNumberOfEnemies = 1;
 
-        void Start()
+        private void Start()
         {
             GenerateEnemies();
         }
@@ -31,28 +29,21 @@ namespace Game.Scripts.Enemy
         // Won't Spawn an enemy if there is already an obstacle present on the tile.
         public void GenerateEnemies()
         {
+            Vector2Int enemyGridPosition = enemyObstacleData.GetSelectedPosition();
 
-            for (int x = 0; x < 10; x++)
+            if (obstacleData.GetObstacleAt(enemyGridPosition.x, enemyGridPosition.y) ||
+                enemyGridPosition == Vector2Int.zero)
             {
-                for (int y = 0; y < 10; y++)
-                {
-                    
-                    if (enemyObstacleData.GetEnemiesAt(x, y) &&numberOfEnemies < _maxNumberOfEnemies)
-                    {
-                        if (obstacleData.GetObstacleAt(x, y))
-                        {
-                            Debug.LogError("Obstacle already exists");
-                            return;
-                        }
-                        Vector3 position = new Vector3((x) * tileSize, tileSize, (y) * tileSize);
-
-                        _enemies[x, y] = Instantiate(enemyPrefab, position, Quaternion.identity, transform);
-                        numberOfEnemies++;
-                    }
-                }
+                Vector3 position = new Vector3((9) * tileSize, tileSize, (9) * tileSize);
+                _enemies[9, 9] = Instantiate(enemyPrefab, position, Quaternion.identity, transform);
+            }
+            else
+            {
+                Vector3 position = new Vector3((enemyGridPosition.x) * tileSize, tileSize,
+                    (enemyGridPosition.y) * tileSize);
+                _enemies[enemyGridPosition.x, enemyGridPosition.y] =
+                    Instantiate(enemyPrefab, position, Quaternion.identity, transform);
             }
         }
-
-      
     }
 }

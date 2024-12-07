@@ -29,6 +29,10 @@ namespace Game.Scripts.Managers
             {
                 for (int y = 0; y < 10; y++)
                 {
+                    if (x == 0 && y == 0 || x == 9 && y == 9)
+                    {
+                        continue;
+                    }
                     if (obstacleData.GetObstacleAt(x, y))
                     {
                         Vector3 position = new Vector3((x) * tileSize, tileSize * 1.5f, (y) * tileSize);

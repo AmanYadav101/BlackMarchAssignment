@@ -7,18 +7,13 @@ namespace Game.Scripts.Enemy
     {
         private Transform _player; 
 
-        private Vector2Int _enemyGridPosition;
         private Vector2Int _playerGridPosition;
         
         private void Awake()
         {
             _player = GameObject.FindAnyObjectByType<PlayerMovement>().transform;
         }
-
-        private void Start()
-        {
-            _enemyGridPosition = GetGridPosition(transform.position);
-        }
+        
 
         private void Update()
         {
@@ -39,11 +34,8 @@ namespace Game.Scripts.Enemy
                 if (Mathf.Approximately(nextPosition.x, _playerGridPosition.x) && Mathf.Approximately(nextPosition.z, _playerGridPosition.y))
                 {
                     
-                    enemyObstacleData.SetObstacleAt(originalPosition.x,
-                        originalPosition.y, false);
-                    
-                    enemyObstacleData.SetObstacleAt((int)gameObject.transform.position.x,
-                        (int)gameObject.transform.position.z, true);
+                    enemyObstacleData.SetSelectedPosition((int)gameObject.transform.position.x,
+                        (int)gameObject.transform.position.z);
                     
                     turnToMove = Turn.Player;
                     return;
