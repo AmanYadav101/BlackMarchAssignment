@@ -76,7 +76,7 @@ namespace Game.Scripts
         /// BFS to find the shortest path between the character and the targetTile.
         /// </summary>
         /// <param name="targetTile">Target tile</param>
-        protected void BfsToTile(Tile targetTile)
+        protected bool BfsToTile(Tile targetTile)
         {
             // BFS to find the shortest path
 
@@ -106,7 +106,7 @@ namespace Game.Scripts
                 {
                     // get path and it to the queue movement
                     BackTrackPath(originalPosition, target, cameFrom);
-                    return;
+                    return true;
                 }
 
                 foreach (Vector2Int neighbor in GetNeighborsPos(current))
@@ -121,8 +121,18 @@ namespace Game.Scripts
                     cameFrom[neighbor] = current;
                 }
             }
-            
+
             // when path is not found.
+            if (turnToMove == Turn.Player)
+            {
+                Debug.LogError("No possible path found");
+            }
+            else
+            {
+                turnToMove = Turn.Player;
+            }
+
+            return false;
         }
 
         /// <summary>

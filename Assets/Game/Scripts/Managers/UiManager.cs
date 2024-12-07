@@ -36,6 +36,15 @@ namespace Game.Scripts.Managers
             waitForYourTurnText.gameObject.SetActive(false);
             waitForYourTurnText.fontSize = 145;
         }
+        public IEnumerator NoPathFound()
+        {
+            waitForYourTurnText.gameObject.SetActive(true);
+            waitForYourTurnText.fontSize = 100;
+            waitForYourTurnText.text = "No Possible Path to Move to the target location...";
+            yield return new WaitForSeconds(1.5f);
+            waitForYourTurnText.gameObject.SetActive(false);
+            waitForYourTurnText.fontSize = 145;
+        }
         public IEnumerator ObstacleTile()
         {
             waitForYourTurnText.gameObject.SetActive(true);
