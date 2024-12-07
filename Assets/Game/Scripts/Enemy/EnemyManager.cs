@@ -3,24 +3,32 @@ using UnityEngine;
 
 namespace Game.Scripts.Enemy
 {
+    /// <summary>
+    /// Used to Spawn Enemies at the locations mentioned in the "EnemyObstacleData" scriptable object.
+    /// The maxNumberOfEnemies to be spawned can be adjusted by the variable "_maxNumberOfEnemies"
+    /// Doesn't spawn an Enemy if there is an obstacle present on the corresponding tile.
+    /// </summary>
     public class EnemyManager : MonoBehaviour
     {
         public ObstacleData obstacleData;
+        public EnemyObstacleData enemyObstacleData; 
+        public GameObject enemyPrefab; 
+        public float tileSize = 1.0f; 
 
-        public EnemyObstacleData enemyObstacleData; // Reference to the ScriptableObject
-        public GameObject enemyPrefab; // Prefab for the obstacle (e.g., a red sphere)
-        public float tileSize = 1.0f; // Tile size (same as the grid)
-
-        private GameObject[,] _enemies = new GameObject[10, 10]; // Store obstacle instances
+        private GameObject[,] _enemies = new GameObject[10, 10]; 
 
         private int _maxNumberOfEnemies = 1;
-        int numberOfEnemies = 0;
+        
+        // Used to keep record of number of enemies that has been spawned and that the enemies to spawn doesn't exist _maxNumberOfEnemies.
+        int numberOfEnemies = 0; 
 
         void Start()
         {
             GenerateEnemies();
         }
 
+        // Used for spawning enemies at the particular position in the grid.
+        // Won't Spawn an enemy if there is already an obstacle present on the tile.
         public void GenerateEnemies()
         {
 

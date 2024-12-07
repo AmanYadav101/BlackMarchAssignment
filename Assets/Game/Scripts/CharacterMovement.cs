@@ -26,13 +26,17 @@ namespace Game.Scripts
         protected Vector2 finalTarget = Vector2.negativeInfinity;
         protected Vector2Int originalPosition = new Vector2Int { x = -1, y = -1 };
 
-
+        /// <summary>
+        /// Move character gameObject to the targetPosition.
+        /// </summary>
+        /// <param name="targetPosition">Target position to move to.</param>
+        /// <param name="changeTurnToMoveTo">Change the turn of moving to.</param>
         protected IEnumerator MoveToTarget(Vector3 targetPosition, Turn changeTurnToMoveTo)
         {
             isMoving = true;
-            
+
             animator.SetBool("IsMoving", isMoving);
-            
+
             if (gameObject.transform.position.x < targetPosition.x)
             {
                 gameObject.transform.transform.rotation = Quaternion.Euler(0, 90, 0);
@@ -56,6 +60,7 @@ namespace Game.Scripts
                     moveSpeed * Time.deltaTime);
                 yield return null;
             }
+
             isMoving = false; // Movement complete
             animator.SetBool("IsMoving", isMoving);
 
@@ -65,15 +70,19 @@ namespace Game.Scripts
             {
                 turnToMove = changeTurnToMoveTo;
             }
-
         }
 
+        /// <summary>
+        /// BFS to find the shortest path between the character and the targetTile.
+        /// </summary>
+        /// <param name="targetTile">Target tile</param>
         protected void BfsToTile(Tile targetTile)
         {
+            // BFS to find the shortest path
+
             finalTarget.x = targetTile.gridPosition.x;
             finalTarget.y = targetTile.gridPosition.y;
 
-            // BFS to find the shortest path
             originalPosition = new Vector2Int(
                 Mathf.RoundToInt(gameObject.transform.position.x),
                 Mathf.RoundToInt(gameObject.transform.position.z)
@@ -90,31 +99,42 @@ namespace Game.Scripts
 
             while (queue.Count > 0)
             {
+                // get the current element from the start of the queue
                 Vector2Int current = queue.Dequeue();
 
                 if (current == target)
                 {
+                    // get path and it to the queue movement
                     BackTrackPath(originalPosition, target, cameFrom);
                     return;
                 }
 
                 foreach (Vector2Int neighbor in GetNeighborsPos(current))
                 {
-                    if (!visited.Contains(neighbor) && !IsObstacle(neighbor) && !IsEnemy(neighbor))
-                    {
-                        queue.Enqueue(neighbor);
-                        visited.Add(neighbor);
-                        cameFrom[neighbor] = current;
-                    }
+                    // check if the neighbor is an obstacle or an enemy or is already visited
+                    if (visited.Contains(neighbor) || IsObstacle(neighbor) || IsEnemy(neighbor)) continue;
+                    // add neighbor to the queue and mark it as visited
+                    queue.Enqueue(neighbor);
+                    visited.Add(neighbor);
+
+                    // add neighbor's parent 
+                    cameFrom[neighbor] = current;
                 }
             }
         }
 
+        /// <summary>
+        /// Backtrack the path taken from start to target using cameFrom dictionary.
+        /// </summary>
+        /// <param name="start">Starting position.</param>
+        /// <param name="target">Target position.</param>
+        /// <param name="cameFrom">dictionary of path taken.</param>
         private void BackTrackPath(Vector2Int start, Vector2Int target, Dictionary<Vector2Int, Vector2Int> cameFrom)
         {
             List<Vector3> path = new List<Vector3>();
             Vector2Int current = target;
 
+            // traverse the path using cameFrom dictionary from target to the start.
             while (current != start)
             {
                 Vector3 worldPosition = new Vector3(current.x, gameObject.transform.position.y, current.y);
@@ -122,11 +142,17 @@ namespace Game.Scripts
                 current = cameFrom[current];
             }
 
-            path.Reverse(); // Reverse to get the path from start to target
+            // Reverse to get the path from start to target
+            path.Reverse();
+
             AddToPath(path);
         }
 
-        protected void AddToPath(List<Vector3> path)
+        /// <summary>
+        /// Add path List to the movementQueue
+        /// </summary>
+        /// <param name="path">path to add to the movementQueue</param>
+        private void AddToPath(List<Vector3> path)
         {
             foreach (Vector3 position in path)
             {
@@ -134,6 +160,11 @@ namespace Game.Scripts
             }
         }
 
+        /// <summary>
+        /// Get all neighboring grid values.
+        /// </summary>
+        /// <param name="position">find neighbors of position.</param>
+        /// <returns>A list of neighbors grid position.</returns>
         protected List<Vector2Int> GetNeighborsPos(Vector2Int position)
         {
             List<Vector2Int> neighbors = new List<Vector2Int>
@@ -147,26 +178,48 @@ namespace Game.Scripts
 
             // remove outside grid values
             neighbors.RemoveAll(neighbor => !IsValidPosition(neighbor));
+
             return neighbors;
         }
 
+        /// <summary>
+        /// Check the obstacleData if the position is an obstacle or not.
+        /// </summary>
+        /// <param name="position">grid position to check for obstacle.</param>
+        /// <returns>boolean value if the given position is an obstacle or not.</returns>
         private bool IsObstacle(Vector2Int position)
         {
             return obstacleData.GetObstacleAt(position.x, position.y);
         }
 
+        /// <summary>
+        /// Check if there is an enemy at the position or not.
+        /// </summary>
+        /// <param name="position">grid position to check for enemy.</param>
+        /// <returns>boolean value if the given position is an enemy or not.</returns>
         private bool IsEnemy(Vector2Int position)
         {
             return enemyObstacleData.GetEnemiesAt(position.x, position.y);
         }
 
+        /// <summary>
+        /// Check if the position is on the grid or not.
+        /// </summary>
+        /// <param name="position">grid position to check if it is valid.</param>
+        /// <returns>boolean value if the given position is valid or not.</returns>
         private bool IsValidPosition(Vector2Int position)
         {
             return position is { x: >= 0 and <= 9, y: >= 0 and <= 9 };
         }
 
+        /// <summary>
+        /// Get the tile under the given position using ray casting in downward direction.
+        /// </summary>
+        /// <param name="position">position to get tile from.</param>
+        /// <returns>null if Tile not found else returns Tile object</returns>
         protected static Tile GetTileAtPosition(Vector2Int position)
         {
+            // ray casting from the position in downward direction
             Ray ray = new Ray(new Vector3(position.x, 2, position.y), Vector3.down);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {

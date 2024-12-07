@@ -3,22 +3,28 @@ using UnityEngine;
 
 namespace Game.Scripts.Managers
 {
+    /// <summary>
+    /// Obstacle Manager is used for Generating Obstacles at Positions mentioned in the "Obstacle Data".
+    /// </summary>
     public class ObstacleManager : MonoBehaviour
     {
-        public ObstacleData obstacleData; // Reference to the ScriptableObject
-        public GameObject obstaclePrefab; // Prefab for the obstacle (e.g., a red sphere)
-        public float tileSize = 1.0f; // Tile size (same as the grid)
-
-        private GameObject[,] obstacles = new GameObject[10, 10]; // Store obstacle instances
+        public ObstacleData obstacleData;
+        public GameObject obstaclePrefab;
+        public float tileSize = 1.0f;
+        private GameObject[,] obstacles = new GameObject[10, 10];
 
         void Start()
         {
             GenerateObstacles();
         }
 
+        /// <summary>
+        /// GenerateObstacles function used for generating obstacles, by looping through the obstacle data and
+        /// generating the obstacle at that location in the grid.
+        /// The positions of obstacles are determined based on the grid index.
+        /// </summary>
         public void GenerateObstacles()
         {
-
             for (int x = 0; x < 10; x++)
             {
                 for (int y = 0; y < 10; y++)
@@ -32,7 +38,5 @@ namespace Game.Scripts.Managers
                 }
             }
         }
-
-      
     }
 }

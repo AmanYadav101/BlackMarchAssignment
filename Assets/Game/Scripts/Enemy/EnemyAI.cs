@@ -5,20 +5,14 @@ namespace Game.Scripts.Enemy
 {
     public class EnemyAI : CharacterMovement
     {
-        private Transform player; // Assign the player's Transform in the Inspector
+        private Transform _player; 
 
         private Vector2Int _enemyGridPosition;
         private Vector2Int _playerGridPosition;
-
-        private float playerNotMovingTimer = 0f; // Timer to track how long the player has been stationary
-
-        private float
-            delayBeforeMoving =
-                1f; // The amount of time (in seconds) the player needs to stop moving before the enemy moves
-
+        
         private void Awake()
         {
-            player = GameObject.FindAnyObjectByType<PlayerMovement>().transform;
+            _player = GameObject.FindAnyObjectByType<PlayerMovement>().transform;
         }
 
         private void Start()
@@ -34,9 +28,7 @@ namespace Game.Scripts.Enemy
                 return;
             }
 
-            _playerGridPosition = GetGridPosition(player.position);
-
-            // Debug.Log("PlayerPos: " + _playerGridPosition);
+            _playerGridPosition = GetGridPosition(_player.position);
 
 
             Tile tile = GetTileAtPosition(_playerGridPosition);
@@ -46,10 +38,13 @@ namespace Game.Scripts.Enemy
                 Vector3 nextPosition = movementQueue.Dequeue();
                 if (Mathf.Approximately(nextPosition.x, _playerGridPosition.x) && Mathf.Approximately(nextPosition.z, _playerGridPosition.y))
                 {
-                    enemyObstacleData.SetObstacleAt((int)gameObject.transform.position.x,
-                        (int)gameObject.transform.position.z, true);
+                    
                     enemyObstacleData.SetObstacleAt(originalPosition.x,
                         originalPosition.y, false);
+                    
+                    enemyObstacleData.SetObstacleAt((int)gameObject.transform.position.x,
+                        (int)gameObject.transform.position.z, true);
+                    
                     turnToMove = Turn.Player;
                     return;
                 }

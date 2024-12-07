@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace Game.Scripts.Editor
 {
+    /// <summary>
+    /// This Editor is same as the Obstacle Editor script.
+    /// Used for overriding the default Editor with the custom editor which is grid based just like the one in the ObstacleEditor.
+    /// </summary>
     [CustomEditor(typeof(EnemyObstacleData))]
     public class EnemyObstacleEditor : UnityEditor.Editor
     {

@@ -38,7 +38,6 @@ namespace Game.Scripts
 
             if (Input.GetKeyDown(KeyCode.Mouse0) && !isMoving && turnToMove == Turn.Player)
             {
-                StartCoroutine(uiManager.Moving());
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit))
@@ -51,10 +50,14 @@ namespace Game.Scripts
                     {
                         if (!tile.isObstacle)
                         {
+                            StartCoroutine(uiManager.Moving());
+
                             BfsToTile(tile);
                         }
                         else
                         {
+                            StartCoroutine(uiManager.ObstacleTile());
+
                             Debug.Log("Tile is an obstacle");
                         }
                     }
