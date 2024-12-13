@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Game.Scripts.Enemy;
+using Game.Scripts.StateManagers;
 using Game.Scripts.Obstacle;
 using UnityEngine;
 
@@ -75,19 +76,19 @@ namespace Game.Scripts
         /// <summary>
         /// BFS to find the shortest path between the character and the targetTile.
         /// </summary>
-        /// <param name="targetTile">Target tile</param>
-        protected bool BfsToTile(Tile targetTile)
+        /// <param name="targetTileStateManager">Target tile</param>
+        protected bool BfsToTile(TileStateManager targetTileStateManager)
         {
             // BFS to find the shortest path
 
-            finalTarget.x = targetTile.gridPosition.x;
-            finalTarget.y = targetTile.gridPosition.y;
+            finalTarget.x = targetTileStateManager.gridPosition.x;
+            finalTarget.y = targetTileStateManager.gridPosition.y;
 
             originalPosition = new Vector2Int(
                 Mathf.RoundToInt(gameObject.transform.position.x),
                 Mathf.RoundToInt(gameObject.transform.position.z)
             );
-            Vector2Int target = targetTile.gridPosition;
+            Vector2Int target = targetTileStateManager.gridPosition;
 
             Queue<Vector2Int> queue = new Queue<Vector2Int>();
             Dictionary<Vector2Int, Vector2Int> cameFrom = new Dictionary<Vector2Int, Vector2Int>();
@@ -229,13 +230,13 @@ namespace Game.Scripts
         /// </summary>
         /// <param name="position">position to get tile from.</param>
         /// <returns>null if Tile not found else returns Tile object</returns>
-        protected static Tile GetTileAtPosition(Vector2Int position)
+        protected static TileStateManager GetTileAtPosition(Vector2Int position)
         {
             // ray casting from the position in downward direction
             Ray ray = new Ray(new Vector3(position.x, 2, position.y), Vector3.down);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                return hit.collider.GetComponent<Tile>();
+                return hit.collider.GetComponent<TileStateManager>();
             }
 
             return null;

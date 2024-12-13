@@ -1,5 +1,5 @@
-using System;
 using Game.Scripts.Managers;
+using Game.Scripts.StateManagers;
 using UnityEngine;
 
 namespace Game.Scripts
@@ -17,6 +17,8 @@ namespace Game.Scripts
         {
             if (turnToMove == Turn.Enemy)
             {
+                uiManager.HideUIOnEndTurn();
+
                 if (Input.GetMouseButtonDown(0))
                 {
                     StartCoroutine(uiManager.WaitForTurn());
@@ -25,6 +27,10 @@ namespace Game.Scripts
                 return;
             }
 
+            if (turnToMove == Turn.Player)
+            {
+                uiManager.ShowEndTurnUI();
+            }
 
             if (!isMoving && movementQueue.Count > 0)
             {
@@ -38,14 +44,14 @@ namespace Game.Scripts
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit))
                 {
-                    Tile tile = hit.collider.GetComponent<Tile>();
+                    TileStateManager tileStateManager = hit.collider.GetComponent<TileStateManager>();
 
-                    if (tile != null)
+                    if (tileStateManager != null)
                     {
-                        if (!tile.isObstacle)
+                        if (!tileStateManager.hasObstacle)
                         {
                             StartCoroutine(uiManager.Moving());
-                            if (!BfsToTile(tile))
+                            if (!BfsToTile(tileStateManager))
                             {
                                 StartCoroutine(uiManager.NoPathFound());
                             }
@@ -62,8 +68,14 @@ namespace Game.Scripts
 
             if (Input.GetKeyDown(KeyCode.Mouse0) && isMoving && turnToMove == Turn.Player)
             {
+                uiManager.HideUIOnEndTurn();
                 StartCoroutine(uiManager.Moving());
             }
+        }
+
+        public void TestMethod()
+        {
+            turnToMove = Turn.Enemy;
         }
     }
 }

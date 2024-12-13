@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Scripts.Managers
 {
@@ -13,12 +16,25 @@ namespace Game.Scripts.Managers
     public class UiManager : MonoBehaviour
     {
         public TextMeshProUGUI waitForYourTurnText;
+        public Button endTurnButton;
+        private PlayerMovement _playerMovement;
+
+        private void OnEnable()
+        {
+            endTurnButton.onClick.AddListener(OnEndTurnButtonPressed);
+        }
+
+        private void OnDisable()
+        {
+            endTurnButton.onClick.RemoveAllListeners();
+        }
 
         void Start()
         {
+            _playerMovement = FindObjectOfType<PlayerMovement>();
             waitForYourTurnText.gameObject.SetActive(false);
         }
-        
+
         public IEnumerator WaitForTurn()
         {
             waitForYourTurnText.gameObject.SetActive(true);
@@ -36,6 +52,7 @@ namespace Game.Scripts.Managers
             waitForYourTurnText.gameObject.SetActive(false);
             waitForYourTurnText.fontSize = 145;
         }
+
         public IEnumerator NoPathFound()
         {
             waitForYourTurnText.gameObject.SetActive(true);
@@ -45,6 +62,7 @@ namespace Game.Scripts.Managers
             waitForYourTurnText.gameObject.SetActive(false);
             waitForYourTurnText.fontSize = 145;
         }
+
         public IEnumerator ObstacleTile()
         {
             waitForYourTurnText.gameObject.SetActive(true);
@@ -53,6 +71,21 @@ namespace Game.Scripts.Managers
             yield return new WaitForSeconds(1.5f);
             waitForYourTurnText.gameObject.SetActive(false);
             waitForYourTurnText.fontSize = 145;
+        }
+
+        public void HideUIOnEndTurn()
+        {
+            endTurnButton.gameObject.SetActive(false);
+        }
+
+        private void OnEndTurnButtonPressed()
+        {
+            _playerMovement.TestMethod();
+        }
+
+        public void ShowEndTurnUI()
+        {
+            endTurnButton.gameObject.SetActive(true);
         }
     }
 }

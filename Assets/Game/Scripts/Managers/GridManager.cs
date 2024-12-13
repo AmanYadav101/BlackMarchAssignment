@@ -1,9 +1,7 @@
-using System;
+using Game.Scripts.StateManagers;
 using Game.Scripts.Obstacle;
 using TMPro;
-using Unity.AI.Navigation;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Scripts.Managers
 {
@@ -20,11 +18,12 @@ namespace Game.Scripts.Managers
         public Camera mainCamera;
         public TextMeshProUGUI tileInfoText;
         public ObstacleData obstacleData;
+        public TileStateManager tileStateManager;
 
 
-        private Tile _lastHoveredTile;
+        private TileStateManager _lastHoveredTileState;
 
-        void Start()
+        private void Start()
         {
             GenerateGrid();
         }
@@ -36,65 +35,73 @@ namespace Game.Scripts.Managers
         /// and If the hovered tile has obstacle present on it, then color of the tile will turn to red on hover.
         /// Hovering over tile also shows the location of the tile and if the Tile has an obstacle on it or not in grid using the "TextMeshPro".
         /// </summary>
-        void Update()
+        private void Update()
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
-                Tile tile = hit.collider.GetComponent<Tile>();
-                if (tile != null)
+                tileStateManager = hit.collider.GetComponent<TileStateManager>();
+                if (!tileStateManager) return;
+                tileStateManager.isMouseOnTile = true;
+
+                if (Input.GetMouseButtonDown(0))
                 {
-                    if (_lastHoveredTile != tile)
-                    {
-                        ResetLastHoveredTile();
-                        _lastHoveredTile = tile;
-                    }
-
-                    tile.GetComponent<MeshRenderer>().materials[0].color = tile.isObstacle ? Color.red : Color.blue;
-
-                    tileInfoText.text = tile.isObstacle ? $"Obstacle Tile:\n {tile.gridPosition}" : $"Tile Position:\n {tile.gridPosition}";
+                    Debug.Log("mv 1pressed");
                 }
+                if (_lastHoveredTileState != tileStateManager)
+                {
+                    ResetLastHoveredTile();
+                    _lastHoveredTileState = tileStateManager;
+                }
+
+                // state - obstacle
+                // tile.GetComponent<MeshRenderer>().materials[0].color = tile.isObstacle ? Color.red : Color.blue;
+
+                tileInfoText.text = tileStateManager.hasObstacle
+                    ? $"Obstacle Tile:\n {tileStateManager.gridPosition}"
+                    : $"Tile Position:\n {tileStateManager.gridPosition}";
             }
             else
             {
                 tileInfoText.text = "Hover over a tile";
             }
         }
-
+        
+        
         /// <summary>
         /// GenerateGrid function used for generating the grid of size "gridRows x gridColumns".
         /// All it does is that it loops through gridRows and gridColumns and Instantiates the "tilePrefab", which is the tile we want to spawn in the grid
         /// Each Tile has a Tile Script attached to it, which is used for determining if the tile is an obstacle Tile or not.
         /// </summary>
-        void GenerateGrid()
+        private void GenerateGrid()
         {
-            for (int i = 0; i < gridRows; i++)
+            for (var i = 0; i < gridRows; i++)
             {
-                for (int j = 0; j < gridColumns; j++)
+                for (var j = 0; j < gridColumns; j++)
                 {
-                    Vector3 position = new Vector3(i * tileSize, 0, j * tileSize);
-                    Quaternion rotation = Quaternion.Euler(-90, 0, 0);
-                    GameObject tile = Instantiate(tilePrefab, position, rotation, transform);
+                    var position = new Vector3(i * tileSize, 0, j * tileSize);
+                    var rotation = Quaternion.Euler(-90, 0, 0);
+                    var tile = Instantiate(tilePrefab, position, rotation, transform);
                     tile.GetComponent<MeshRenderer>().materials[0].color = Color.gray;
                     tile.name = $"Tile_{i}_{j}";
 
-                    Tile tileScript = tile.AddComponent<Tile>();
-                    tileScript.gridPosition = new Vector2Int(i, j);
+                    var tileStateManagerScript = tile.GetComponent<TileStateManager>();
+                    tileStateManagerScript.gridPosition = new Vector2Int(i, j);
 
 
-                    tileScript.isObstacle = obstacleData.GetObstacleAt(i, j);
+                    tileStateManagerScript.hasObstacle = obstacleData.GetObstacleAt(i, j);
                 }
             }
         }
 
 
         // Just a function for resetting the color of the tiles back to its original color.
-        void ResetLastHoveredTile()
+        private void ResetLastHoveredTile()
         {
-            if (_lastHoveredTile != null)
+            if (_lastHoveredTileState)
             {
-                _lastHoveredTile.GetComponent<MeshRenderer>().materials[0].color = Color.gray;
+                _lastHoveredTileState.isMouseOnTile = false;
             }
         }
     }

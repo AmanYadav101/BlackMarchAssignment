@@ -1,3 +1,4 @@
+using Game.Scripts.StateManagers;
 using UnityEngine;
 
 
@@ -26,8 +27,8 @@ namespace Game.Scripts.Enemy
             _playerGridPosition = GetGridPosition(_player.position);
 
 
-            Tile tile = GetTileAtPosition(_playerGridPosition);
-            Debug.Log("Tile: " + tile);
+            TileStateManager tileStateManager = GetTileAtPosition(_playerGridPosition);
+            Debug.Log("Tile: " + tileStateManager);
             if (!isMoving && movementQueue.Count > 0)
             {
                 Vector3 nextPosition = movementQueue.Dequeue();
@@ -47,7 +48,7 @@ namespace Game.Scripts.Enemy
             // Perform BFS to find the shortest path to the player
             if (!isMoving)
             {
-                BfsToTile(tile);
+                BfsToTile(tileStateManager);
             }
         }
 
