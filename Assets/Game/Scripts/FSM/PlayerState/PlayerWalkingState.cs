@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Game.Scripts.StateManagers;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace Game.Scripts.FSM.PlayerState
             throw new System.NotImplementedException();
         }
         
-        protected IEnumerator MoveToPosition(Vector3 targetPosition, PlayerStateManager playerState)
+        protected void MoveToPosition(Vector3 targetPosition, PlayerStateManager playerState)
         {
             if (playerState.transform.position.x < targetPosition.x)
             {
@@ -53,7 +54,6 @@ namespace Game.Scripts.FSM.PlayerState
             {
                 playerState.transform.position = Vector3.MoveTowards(playerState.transform.position, targetPosition,
                     walkingSpeed * Time.deltaTime);
-                yield return null;
             }
             playerState.transform.position = targetPosition; // Snap to target position
 

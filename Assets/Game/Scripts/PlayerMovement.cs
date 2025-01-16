@@ -1,5 +1,7 @@
+using System;
 using Game.Scripts.Managers;
 using Game.Scripts.StateManagers;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Scripts
@@ -7,6 +9,18 @@ namespace Game.Scripts
     public class PlayerMovement : CharacterMovement
     {
         private UiManager uiManager;
+
+        public static event Action OnMouseClicked;
+
+        private void OnEnable()
+        {
+            OnMouseClicked += MouseClicked;
+        }
+        
+        private void OnDisable()
+        {
+            OnMouseClicked -= MouseClicked;
+        }
 
         private void Start()
         {
@@ -38,44 +52,55 @@ namespace Game.Scripts
                 StartCoroutine(MoveToTarget(nextPosition, Turn.Enemy));
             }
 
-            if (Input.GetKeyDown(KeyCode.Mouse0) && !isMoving && turnToMove == Turn.Player)
+            if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit))
-                {
-                    TileStateManager tileStateManager = hit.collider.GetComponent<TileStateManager>();
-
-                    if (tileStateManager != null)
-                    {
-                        if (!tileStateManager.hasObstacle)
-                        {
-                            StartCoroutine(uiManager.Moving());
-                            if (!BfsToTile(tileStateManager))
-                            {
-                                StartCoroutine(uiManager.NoPathFound());
-                            }
-                        }
-                        else
-                        {
-                            StartCoroutine(uiManager.ObstacleTile());
-
-                            Debug.Log("Tile is an obstacle");
-                        }
-                    }
-                }
-            }
-
-            if (Input.GetKeyDown(KeyCode.Mouse0) && isMoving && turnToMove == Turn.Player)
-            {
-                uiManager.HideUIOnEndTurn();
-                StartCoroutine(uiManager.Moving());
+                OnMouseClicked?.Invoke();
             }
         }
 
         public void TestMethod()
         {
             turnToMove = Turn.Enemy;
+        }
+
+        private void MouseClicked()
+        {
+            switch (isMoving)
+            {
+                case false when turnToMove == Turn.Player:
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+                    if (Physics.Raycast(ray, out hit))
+                    {
+                        TileStateManager tileStateManager = hit.collider.GetComponent<TileStateManager>();
+
+                        if (tileStateManager)
+                        {
+                            if (!tileStateManager.hasObstacle)
+                            {
+                                StartCoroutine(uiManager.Moving());
+                                if (!BfsToTile(tileStateManager))
+                                {
+                                    StartCoroutine(uiManager.NoPathFound());
+                                }
+                            }
+                            else
+                            {
+                                StartCoroutine(uiManager.ObstacleTile());
+
+                                Debug.Log("Tile is an obstacle");
+                            }
+                        }
+                    }
+
+                    break;
+                }
+                case true when turnToMove == Turn.Player:
+                    uiManager.HideUIOnEndTurn();
+                    StartCoroutine(uiManager.Moving());
+                    break;
+            }
         }
     }
 }
