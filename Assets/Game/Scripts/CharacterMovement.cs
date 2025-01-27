@@ -32,7 +32,7 @@ namespace Game.Scripts
         /// </summary>
         /// <param name="targetPosition">Target position to move to.</param>
         /// <param name="changeTurnToMoveTo">Change the turn of moving to.</param>
-        protected IEnumerator MoveToTarget(Vector3 targetPosition, Turn changeTurnToMoveTo)
+        protected IEnumerator MoveToTarget(Vector3 targetPosition, Turn changeTurnToMoveTo = Turn.Player)
         {
             isMoving = true;
 
@@ -63,9 +63,11 @@ namespace Game.Scripts
             }
 
             isMoving = false; // Movement complete
+            Debug.Log("IsMoving: " + isMoving);
             animator.SetBool("IsMoving", isMoving);
 
             gameObject.transform.position = targetPosition; // Snap to target position
+
             if (finalTarget != Vector2.negativeInfinity && Mathf.Approximately(finalTarget.x, targetPosition.x) &&
                 Mathf.Approximately(finalTarget.y, targetPosition.z))
             {

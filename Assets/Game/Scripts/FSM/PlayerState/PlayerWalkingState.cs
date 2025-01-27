@@ -5,58 +5,65 @@ using UnityEngine;
 
 namespace Game.Scripts.FSM.PlayerState
 {
-    public class PlayerWalkingState: PlayerBaseState
+    public class PlayerWalkingState : PlayerBaseState
     {
-        const int walkingSpeed = 3;
-        public override void OnEnterState(PlayerStateManager playerState)
+        const float walkingSpeed = 3f;
+
+        public PlayerWalkingState(PlayerMovement playerMovement)
+        {
+            this.playerMovement = playerMovement;
+        }
+
+        public override void OnEnterState()
         {
             Debug.Log("OnEnter() walking ");
-            throw new System.NotImplementedException();
         }
-
-        public override void OnExitState(PlayerStateManager playerState)
-        {
-            Debug.Log("OnExit walking");
-            throw new System.NotImplementedException();
-        }
-
-        public override void OnUpdateState(PlayerStateManager playerState)
+public override void OnUpdateState()
         {
             Debug.Log("OnUpdate walking");
-            throw new System.NotImplementedException();
+            
+            playerMovement.StartMovementToPosition(playerMovement.nPosition,walkingSpeed);
+        }
+        public override void OnExitState()
+        {
+            Debug.Log("OnExit walking");
         }
 
-        public override void OnPlayerInput(PlayerStateManager playerState)
-        {
-            throw new System.NotImplementedException();
-        }
         
-        protected void MoveToPosition(Vector3 targetPosition, PlayerStateManager playerState)
+
+        public override void OnPlayerInput()
         {
-            if (playerState.transform.position.x < targetPosition.x)
+        }
+
+        protected void MoveToPosition(Vector3 targetPosition)
+        {
+            playerMovement.isMoving = true;
+            if (playerMovement.transform.position.x < targetPosition.x)
             {
-                playerState.transform.transform.rotation = Quaternion.Euler(0, 90, 0);
+                playerMovement.transform.rotation = Quaternion.Euler(0, 90, 0);
             }
-            else if (playerState.transform.position.x > targetPosition.x)
+            else if (playerMovement.transform.position.x > targetPosition.x)
             {
-                playerState.transform.transform.rotation = Quaternion.Euler(0, -90, 0);
+                playerMovement.transform.rotation = Quaternion.Euler(0, -90, 0);
             }
-            else if (playerState.transform.position.z < targetPosition.z)
+            else if (playerMovement.transform.position.z < targetPosition.z)
             {
-                playerState.transform.transform.rotation = Quaternion.Euler(0, 0, 0);
+                playerMovement.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
-            else if (playerState.transform.position.z > targetPosition.z)
+            else if (playerMovement.transform.position.z > targetPosition.z)
             {
-                playerState.transform.transform.rotation = Quaternion.Euler(0, -180, 0);
+                playerMovement.transform.rotation = Quaternion.Euler(0, -180, 0);
             }
 
-            while (Vector3.Distance(playerState.transform.position, targetPosition) > 0.1f)
+            while (Vector3.Distance(playerMovement.transform.position, targetPosition) > 0.1f)
             {
-                playerState.transform.position = Vector3.MoveTowards(playerState.transform.position, targetPosition,
+                playerMovement.transform.position = Vector3.MoveTowards(playerMovement.transform.position, targetPosition,
                     walkingSpeed * Time.deltaTime);
             }
-            playerState.transform.position = targetPosition; // Snap to target position
+            playerMovement.isMoving = false;
 
+            playerMovement.transform.position = targetPosition; // Snap to target position
+           
         }
     }
 }

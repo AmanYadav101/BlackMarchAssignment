@@ -4,10 +4,12 @@ namespace Game.Scripts.FSM
 {
     public abstract class PlayerBaseState
     {
-        public abstract void OnEnterState(PlayerStateManager playerState);
-        public abstract void OnExitState(PlayerStateManager playerState);
-        public abstract void OnUpdateState(PlayerStateManager playerState);
-        public abstract void OnPlayerInput(PlayerStateManager playerState);
+        protected PlayerMovement playerMovement;
+        
+        public abstract void OnEnterState();
+        public abstract void OnExitState();
+        public abstract void OnUpdateState();
+        public abstract void OnPlayerInput();
         
     }
 }

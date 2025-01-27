@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using Game.Scripts.FSM;
+using Game.Scripts.FSM.PlayerState;
 using Game.Scripts.Managers;
 using Game.Scripts.StateManagers;
 using Unity.VisualScripting;
@@ -11,19 +14,31 @@ namespace Game.Scripts
         private UiManager uiManager;
 
         public static event Action OnMouseClicked;
+        PlayerBaseState _currentPlayerState;
+        [HideInInspector] public PlayerIdleState _playerIdleState;
+        [HideInInspector] public PlayerWalkingState _playerWalkingState;
+
+        [HideInInspector] public Vector3 nPosition;
 
         private void OnEnable()
         {
             OnMouseClicked += MouseClicked;
         }
-        
+
         private void OnDisable()
         {
             OnMouseClicked -= MouseClicked;
         }
 
+        private void Awake()
+        {
+            _playerIdleState = new PlayerIdleState(this);
+            _playerWalkingState = new PlayerWalkingState(this);
+        }
+
         private void Start()
         {
+            ChangeState(_playerIdleState);
             uiManager = FindObjectOfType<UiManager>();
         }
 
@@ -44,13 +59,21 @@ namespace Game.Scripts
             if (turnToMove == Turn.Player)
             {
                 uiManager.ShowEndTurnUI();
+                if (!isMoving && movementQueue.Count > 0)
+                {
+                    nPosition = movementQueue.Dequeue();
+                    ChangeState(_playerWalkingState);
+                }
+                else if (movementQueue.Count == 0)
+                {
+                    if (_currentPlayerState != _playerIdleState)
+                    {
+                        ChangeState(_playerIdleState);
+                    }
+                }
             }
+            _currentPlayerState?.OnUpdateState();
 
-            if (!isMoving && movementQueue.Count > 0)
-            {
-                Vector3 nextPosition = movementQueue.Dequeue();
-                StartCoroutine(MoveToTarget(nextPosition, Turn.Enemy));
-            }
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
@@ -61,6 +84,14 @@ namespace Game.Scripts
         public void TestMethod()
         {
             turnToMove = Turn.Enemy;
+        }
+
+        public void StartMovementToPosition(Vector3 targetPosition, float speed)
+        {
+            if (!isMoving)
+            {
+                StartCoroutine(MoveToTarget(targetPosition));
+            }
         }
 
         private void MouseClicked()
@@ -101,6 +132,14 @@ namespace Game.Scripts
                     StartCoroutine(uiManager.Moving());
                     break;
             }
+        }
+
+
+        public void ChangeState(PlayerBaseState newState)
+        {
+            _currentPlayerState?.OnExitState();
+            _currentPlayerState = newState;
+            _currentPlayerState?.OnEnterState();
         }
     }
 }

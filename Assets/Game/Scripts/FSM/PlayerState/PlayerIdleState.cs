@@ -5,28 +5,29 @@ namespace Game.Scripts.FSM.PlayerState
 {
     public class PlayerIdleState: PlayerBaseState
     {
-        public override void OnEnterState(PlayerStateManager playerState)
+        public PlayerIdleState(PlayerMovement playerMovement)
+        {
+            this.playerMovement = playerMovement;
+        }
+        public override void OnEnterState()
         {
             Debug.Log("idle enter");
-            playerState.animator.Play("Idle");
-            throw new System.NotImplementedException();
+            //playerMovement.animator.Play("Idle");
         }
 
-        public override void OnExitState(PlayerStateManager playerState)
+        public override void OnExitState()
         {
-            Debug.Log("idle exit enter");
+            Debug.Log("idle exit");
 
-            throw new System.NotImplementedException();
         }
 
-        public override void OnUpdateState(PlayerStateManager playerState)
+        public override void OnUpdateState()
         {
-            throw new System.NotImplementedException();
+            Debug.Log("idle update");
         }
 
-        public override void OnPlayerInput(PlayerStateManager playerState)
+        public override void OnPlayerInput()
         {
-            throw new System.NotImplementedException();
         }
     }
 }
